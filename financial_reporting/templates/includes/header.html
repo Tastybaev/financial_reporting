@@ -1,0 +1,32 @@
+<header>
+  <nav class="navbar navbar-light" style="background-color: lightskyblue">
+    <div class="container">
+      <a class="navbar-brand" href="">
+        <span style="color:red">Financial</span>Reporting
+      </a>
+      <ul class="nav nav-pills">
+        {% if user.is_authenticated %}
+        <li class="nav-item"> 
+          <a class="nav-link" href="">Добавить транзакцию</a>
+        </li>
+        <li class="nav-item"> 
+          <a class="nav-link link-light" href="">Изменить пароль</a>
+        </li>
+        <li class="nav-item"> 
+          <a class="nav-link link-light" href="">Выйти</a>
+        </li>
+        <li>
+          Пользователь: {{ user.username }}
+        <li>
+        {% else %}
+        <li class="nav-item"> 
+          <a class="nav-link link-light" href="">Войти</a>
+        </li>
+        <li class="nav-item"> 
+          <a class="nav-link link-light" href="">Регистрация</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>      
+</header> 
