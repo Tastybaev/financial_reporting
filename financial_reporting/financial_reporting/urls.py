@@ -17,13 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import include, path
 
-
-app_name = 'finances'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('finances/', include('finances.urls')), 
+    path('', include('finances.urls')), 
+    path('auth/', include('users.urls')),
+    path('auth/', include('django.contrib.auth.urls')),
 ]
 
 handler404 = 'core.views.page_not_found'

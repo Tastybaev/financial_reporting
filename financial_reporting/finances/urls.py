@@ -3,6 +3,8 @@ from django.urls import path
 
 from finances import views
 
+app_name = 'finances'
+
 
 urlpatterns = [
     path('', (views.index), name='index'),
