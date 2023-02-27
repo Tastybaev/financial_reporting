@@ -33,13 +33,13 @@
 
 <div class="container">
   <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
-      <svg class="bi me-2" width="64" height="64" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
+    <a href="/" class="fr-div d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+      <svg class="bi me-2 fr-center" width="64" height="64" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
     </a>
 
     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
       <li><a href="/" class="nav-link px-2 link-secondary">Главная</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">Транзакции</a></li>
+      <li><a href="{% url 'finances:transactions' %}" class="nav-link px-2 link-dark">Транзакции</a></li>
     </ul>
 
     <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
@@ -48,19 +48,23 @@
 
     <div class="dropdown text-end">
       <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+        </svg>
       </a>
       <ul class="dropdown-menu text-small">
         {% if user.is_authenticated %}
           <li class="dropdown-item">{{ user.username }}</li>
           <li><a class="dropdown-item" href="#">Добавить транзакцию</a></li>
           <li><a class="dropdown-item" href="#">Настройки</a></li>
+          <li><a class="dropdown-item" href="{% url 'users:password_change_form' %}">Изменить пароль</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Выйти</a></li>
+          <li><a class="dropdown-item" href="{% url 'users:logout' %}">Выйти</a></li>
         {% else %}
-          <li><a class="dropdown-item" href="#">Зарегистрироваться</a></li>
+          <li><a class="dropdown-item" href="{% url 'users:signup' %}">Зарегистрироваться</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Войти</a></li>
+          <li><a class="dropdown-item" href="{% url 'users:login' %}">Войти</a></li>
         {% endif %}
       </ul>
     </div>
