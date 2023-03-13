@@ -18,8 +18,8 @@ def index(request):
 
 
 @login_required
-def profile(request, User):
-    user = get_object_or_404(User, user=User)
+def profile(request, user):
+    user = get_object_or_404(User, user=user)
     context = {
         'user': user,
         'profile': user,
@@ -28,14 +28,16 @@ def profile(request, User):
 
 
 # @login_required
-def transaction_list(request):
-    # user = get_object_or_404(User, user=User)
-    transactions = Transaction.objects.all()
-    context = {
-        'transactions': transactions,
-        # 'user': user,
-    }
-    return render(request, "finances/transactions.html", context)
+def transaction_list(request, username=None):
+    if not username:
+        # user = get_object_or_404(User, user=username)
+        transactions = Transaction.objects.all()
+        context = {
+            'transactions': transactions,
+            # 'user': user,
+        }
+        return render(request, "finances/transactions.html", context)
+    # дописать если юзер пришел, достать все его транакции и показать.
 
 
 # @login_required
