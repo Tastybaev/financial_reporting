@@ -27,14 +27,12 @@ def profile(request, user):
     return render(request, "finances/profile.html", context)
 
 
-# @login_required
+@login_required
 def transaction_list(request, username=None):
     if not username:
-        # user = get_object_or_404(User, user=username)
-        transactions = Transaction.objects.all()
+        transactions = Transaction.objects.filter(transaction_id=request.user)
         context = {
             'transactions': transactions,
-            # 'user': user,
         }
         return render(request, "finances/transactions.html", context)
     # дописать если юзер пришел, достать все его транакции и показать.

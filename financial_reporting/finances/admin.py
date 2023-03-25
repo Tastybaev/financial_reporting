@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.forms import CheckboxSelectMultiple
+from django.db import models
 
 from .models import Category, Transaction
 

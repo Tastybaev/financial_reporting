@@ -18,6 +18,11 @@ urlpatterns = [
         name='login'
     ),
     path(
+        'login_or_signup/',
+        LoginView.as_view(template_name='users/login_or_signup.html'),
+        name='login_or_signup'
+    ),
+    path(
         'password_change_form/',
         LoginView.as_view(template_name='users/password_change_form.html'),
         name='password_change_form'

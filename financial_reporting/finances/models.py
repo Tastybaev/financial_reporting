@@ -16,7 +16,10 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
+    
+    def __repr__(self):
+        return self.name
 
     def get_absolute_url(self):
         return reverse('tag', args=[self.slug])
@@ -32,7 +35,7 @@ class Transaction(models.Model):
     currency = models.FloatField(max_length=20)
     date = models.DateTimeField(default=timezone.now)
     description = models.TextField()
-    category = models.ManyToManyField(Category, related_name='categories')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='categories', verbose_name='Категория')
     slug = models.SlugField('Слаг', max_length=255)
     
     class Meta:
