@@ -17,8 +17,7 @@ class TrasactionAdmin(admin.ModelAdmin):
         'transaction_type',
         'currency',
         'date',
-        'description',
-        'slug'
+        'description'
     )
 
 

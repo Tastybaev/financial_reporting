@@ -1,0 +1,18 @@
+<div class="paginator">
+    <span>
+        {% if page_number.has_previous %}
+            <span class="btn btn-outline-secondary rounded-pill">
+                <a href="?page_number={{ page_number.previous_page_number }}">Назад</a>
+            </span>      
+        {% endif %}
+        <span>
+            <{{ page_number.number }} из {{ page_number.paginator.num_pages}}>
+        </span>
+        {% if page_number.has_next %}
+            <span class="btn btn-outline-secondary rounded-pill">
+                <a href="?page_number={{ page_number.next_page_number }}">Вперед</a>
+            </span>
+        {% endif %}
+    </span>
+
+</div>

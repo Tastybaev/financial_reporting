@@ -4,21 +4,21 @@
 {% if user.is_authenticated %}
   <main class="col-md-12 col-lg-12 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Транзакции</h1>
+        <button class="btn btn-primary" onclick="togle_modal()">Добавить транзакцию</button>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
+            <a id='togle_transaction' href="{% url 'finances:transactions_by_type' 'income' %}">
+              <!-- здесь закончили, ошибка передачи аргумента -->
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="chart-togle-button">Входящие</button>
+            </a>
             <button type="button" class="btn btn-sm btn-outline-secondary">Импорт</button>
             <button type="button" class="btn btn-sm btn-outline-secondary">Экспорт</button>
           </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar" class="align-text-bottom"></span>
-            Эта неделя
-          </button>
         </div>
       </div>
-
-      <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-
+      <div style="display: none" id="jsonData" data-json-in="{{ dump_in }}" data-json-out="{{ dump_out }}"></div>
+      <canvas class="my-4 w-100 chart-in" id="myChartIn" width="900" height="380"></canvas>
+      <canvas class="my-4 w-100 chart-out" id="myChartOut" width="900" height="380" style="display: none;"></canvas>
       <h2>Транзакции за период</h2>
       <div class="table-responsive">
         <table class="table table-striped table-sm">
@@ -45,21 +45,24 @@
               {% endfor %}
           </tbody>
         </table>
+        {% include "includes/paginator.html" with page_number=transactions %} 
       </div>
-  </main>
-{% else %}
-  <div class="row justify-content-center">
-    <div class="col-md-4 p-0">
-      <div class="card">
-        <div class="card-header">Войти или зарегистрироваться</div>
-        <div class="card-body">
-          <div class="transactions_button">
-            <a href="{% url 'users:signup' %}"><button class="btn btn-lg btn-primary">Регистрация</button></a>
-            <a href="{% url 'users:login' %}"><button class="btn btn-lg btn-primary">Войти</button></a>
-          </div>
-        </div> 
+    <div class="modal" id="add_transaction_modal">
+      <div class="modal_content">
+        <span class="modal_close" onclick="togle_modal()">&times;</span>
+        <h2>Добавить новую транзакцию</h2>
+        {% if new_transaction %}
+          <h2>Tpанзакция создана.</h2>
+        {% else %}
+          <form action="{% url 'finances:transactions' %}" method="post">
+            {{ add_transaction_form.as_p }}
+            {% csrf_token %}
+            <input class="btn btn-primary" type="submit" value="Создать">
+          </form>
+        {% endif %}
       </div>
     </div>
-  </div>
+  </main>
 {% endif %}
 {% endblock %}
+

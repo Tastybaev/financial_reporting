@@ -33,10 +33,9 @@ class Transaction(models.Model):
     transaction_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transaction_id')
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_CHOICE)
     currency = models.FloatField(max_length=20)
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='categories', verbose_name='Категория')
-    slug = models.SlugField('Слаг', max_length=255)
     
     class Meta:
         verbose_name = 'Транзакция'
