@@ -78,3 +78,7 @@
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
 }
+
+.footer_svg {
+  z-index: -1;
+}

@@ -8,11 +8,14 @@
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <a id='togle_transaction' href="{% url 'finances:transactions_by_type' 'income' %}">
-              <!-- здесь закончили, ошибка передачи аргумента -->
               <button type="button" class="btn btn-sm btn-outline-secondary" id="chart-togle-button">Входящие</button>
             </a>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Импорт</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Экспорт</button>
+            <a href="{% url 'finances:import_csv' %}">
+              <button type="button" class="btn btn-sm btn-outline-secondary">Импорт</button>
+            </a>
+            <a href="{% url 'finances:export_csv' %}">
+              <button type="button" class="btn btn-sm btn-outline-secondary">Экспорт</button>
+            </a>
           </div>
         </div>
       </div>
@@ -36,7 +39,7 @@
               {% for transaction in transactions %}
               <tr>
                   <td>{{transaction.transaction_id}}</td>
-                  <td>{{transaction.transaction_type}}</td>
+                  <td>{{transaction.get_transaction_type_display}}</td>
                   <td>{{transaction.currency}}</td>
                   <td>{{transaction.date}}</td>
                   <td>{{transaction.description}}</td>

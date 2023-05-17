@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <button type="submit">Загрузка CSV</button>
+        </form>
+    </div>
+{% endblock %}
+
+
+
+<!-- @login_required
+def import_csv(request):
+    print('rabotaet')
+    if request.method == 'POST':
+        form = TransactionsImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            # сохраняем загруженный файл и делаем запись в базу
+            form_object = form.save()
+            # обработка csv файла
+            with form_object.csv_file.open('r') as csv_file:
+                reader = csv.DictReader(csv_file)
+                for row in reader:
+                    category_name = row['Категория']
+                    category, _ = Category.objects.get_or_create(name=category_name)
+
+                    transaction = Transaction(
+                        transaction_type=row['Тип транзакции'],
+                        currency=row['Сумма'],
+                        description=row['Описание'],
+                        category=category
+                    )
+                    transaction.save()
+            url = reverse('finances:transactions')
+            messages.success(request, 'Файл успешно импортирован')
+            return HttpResponseRedirect(url)
+    form = TransactionsImportForm()
+    return render(request, 'includes/csv_import.html', {'form': form}) -->

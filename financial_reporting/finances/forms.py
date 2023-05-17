@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Transaction
+from .models import Transaction, TransactionImport
 
 
 class AddTransactionForm(ModelForm):
@@ -11,3 +11,8 @@ class AddTransactionForm(ModelForm):
             'description',
             'category',
         )
+
+class TransactionsImportForm(ModelForm):
+    class Meta:
+        model = TransactionImport
+        fields = ('csv_file',)

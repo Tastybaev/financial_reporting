@@ -10,7 +10,7 @@ window.onload = function() {
   console.log(data_outgoing)
   console.log(labels_outgoing)
   var dataSecond = [{
-      label: "Изходящие",
+      label: "Исходящие",
       data: data_outgoing,
       lineTension: 0,
       fill: false,

@@ -25,21 +25,32 @@ class Category(models.Model):
         return reverse('tag', args=[self.slug])
 
 
+class TransactionType(models.TextChoices):
+    INCOME = 'income', 'Входящая'
+    OUTGOING = 'outgoing', 'Исходящая'
+
 class Transaction(models.Model):
-    TRANSACTION_CHOICE = (
-        ('income', 'Входящяя'),
-        ('outgoing', 'Исходщяя')
-    )
     transaction_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transaction_id')
-    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_CHOICE)
-    currency = models.FloatField(max_length=20)
-    date = models.DateTimeField(auto_now_add=True)
-    description = models.TextField()
+    transaction_type = models.CharField('Тип транзакции', max_length=10, choices=TransactionType.choices)
+    currency = models.FloatField('Сумма', max_length=20)
+    date = models.DateTimeField('Дата', auto_now_add=True)
+    description = models.TextField('Описание')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='categories', verbose_name='Категория')
     
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
+        constraints = [
+            models.CheckConstraint(
+            name="%(app_label)s_%(class)s_transaction_type_valid",
+            check=models.Q(transaction_type__in=TransactionType.values)
+            )
+        ]
 
     def __str__(self):
-        return f'{self.description}'
+        return f'{TransactionType(self.transaction_type).label}'
+
+
+class TransactionImport(models.Model):
+    csv_file = models.FileField(upload_to='uploads/')
+    date_added = models.DateTimeField(auto_now_add=True)
