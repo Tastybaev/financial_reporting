@@ -92,7 +92,7 @@ def export_csv(request):
     for transaction in transactions:
         transactions_value_list.append((
             transaction.id,
-            transaction.transaction_type,
+            transaction.get_transaction_type_display(),
             transaction.currency,
             transaction.date.strftime('%d.%m.%Y %H:%M'),
             transaction.description,
