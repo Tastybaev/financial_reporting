@@ -1,10 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils import timezone
 
 User = get_user_model()
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -33,13 +35,14 @@ class Transaction(models.Model):
     transaction_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transaction_id')
     transaction_type = models.CharField('Тип транзакции', max_length=10, choices=TransactionType.choices)
     currency = models.FloatField('Сумма', max_length=20)
-    date = models.DateTimeField('Дата', auto_now_add=True)
+    date = models.DateTimeField('Дата', default=timezone.now)
     description = models.TextField('Описание')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='categories', verbose_name='Категория')
     
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
+        ordering = ['-date']
         constraints = [
             models.CheckConstraint(
             name="%(app_label)s_%(class)s_transaction_type_valid",

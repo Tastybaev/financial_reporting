@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Тарифы {% endblock %}
+{% block content %}
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="check" viewBox="0 0 16 16">
+    <title>Check</title>
+    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path>
+  </symbol>
+</svg>
+<div class="container py-3">
+  <div>
+    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+      <h1 class="display-4 fw-normal">Тарифы</h1>
+      <p class="fs-5 text-muted">Quickly build an effective pricing table for your potential customers with this Bootstrap example. It’s built with default Bootstrap components and utilities with little customization.</p>
+    </div>
+  </div>
+
+  <div>
+    <div class="row row-cols-1 row-cols-md-2 mb-2 text-center">
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+          <div class="card-header py-3">
+            <h4 class="my-0 fw-normal">Стандарт</h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">$0<small class="text-muted fw-light">/месяц</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Добавление транзакции</li>
+              <li>Экспорт транзакций</li>
+              <li>График входящих транзакций</li>
+              <li>График исходящих транзакций</li>
+            </ul>
+            {% if request.user.is_authenticated %}
+              {% if request.user|group_filter:"Standart" %}
+                <p class="fs-5 text-muted">
+                  Текущий тариф
+                </p>
+              {% elif request.user|group_filter:"Premium" %}
+                <p class="fs-5 text-muted">
+                  "Премиум" активирован
+                </p>
+              {% endif %}
+            {% else %}
+              <a href="{% url 'users:signup' %}">
+                <button type="button" class="w-100 btn btn-lg btn-outline-primary">Зарегистрироваться бесплатно</button>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm border-primary">
+          <div class="card-header py-3 text-bg-primary border-primary">
+            <h4 class="my-0 fw-normal">Премиум</h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">$29<small class="text-muted fw-light">/месяц</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Все опции тарифа "Стандарт"</li>
+              <li>Импорт транзакций</li>
+              <li>Калькулятор доходов/расходов</li>
+              <li>&nbsp;</li>
+            </ul>
+            {% if request.user.is_authenticated %}
+              {% if request.user|group_filter:"Standart" %}
+                <button type="button" class="w-100 btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal">Купить</button>
+              {% elif request.user|group_filter:"Premium" %}
+                <button type="button" class="w-100 btn btn-lg btn-primary">"Премиум" активирован</button>
+              {% endif %}
+            {% else %}
+              <a href="{% url 'users:signup' %}">
+                <button type="button" class="w-100 btn btn-lg btn-primary">Зарегистрироваться и купить</button>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="display-6 text-center mb-4">Сравнение тарифов</h2>
+
+    <div class="table-responsive">
+      <table class="table text-center">
+        <thead>
+          <tr>
+            <th style="width: 34%;"></th>
+            <th style="width: 22%;">Стандарт</th>
+            <th style="width: 22%;">Премиум</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row" class="text-start">Добавление транзакций</th>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+          </tr>
+          <tr>
+            <th scope="row" class="text-start">График входящих/исходящих транзакций</th>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+          </tr>
+        </tbody>
+        
+        <tbody>
+          <tr>
+            <th scope="row" class="text-start">Экспорт транзакций</th>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+          </tr>
+          <tr>
+            <th scope="row" class="text-start">Импорт транзакций</th>
+            <td></td>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+          </tr>
+          <tr>
+            <th scope="row" class="text-start">Калькулятор доходов/расходов</th>
+            <td></td>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+          </tr>
+          <tr>
+            <th scope="row" class="text-start">Тех. поддержака по email</th>
+            <td></td>
+            <td><svg class="bi" width="24" height="24"><use xlink:href="#check"/></svg></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="modal" id="paymentModal" tabindex="1050" aria-labelledby="paymentModalLabel" aria-hidden="true" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentModalLabel">Оплата картой</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Форма для ввода данных карты -->
+        <form>
+          <div class="mb-3">
+            <label for="cardNumber" class="form-label">Номер карты</label>
+            <input type="text" class="form-control" id="cardNumber">
+          </div>
+          <div class="mb-3">
+            <label for="cardName" class="form-label">Имя и фамилия на карте</label>
+            <input type="text" class="form-control" id="cardName">
+          </div>
+          <div class="mb-3">
+            <label for="cardExpiration" class="form-label">Срок действия</label>
+            <input type="text" class="form-control" id="cardExpiration">
+          </div>
+          <div class="mb-3">
+            <label for="cardCVV" class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cardCVV">
+          </div>
+          <!-- Дополнительные поля, если необходимо -->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary">Оплатить</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

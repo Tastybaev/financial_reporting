@@ -9,6 +9,7 @@ window.onload = function() {
   var labels_outgoing = jsonData_out.map((item) => item.date_outgoing);
   console.log(data_outgoing)
   console.log(labels_outgoing)
+  console.log(jsonData_out)
   var dataSecond = [{
       label: "Исходящие",
       data: data_outgoing,

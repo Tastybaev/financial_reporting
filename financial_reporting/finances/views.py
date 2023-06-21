@@ -7,11 +7,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 from django.urls import reverse
-import datetime
+from datetime import datetime
 
 import csv
 import json
 
+from .decorators import premium_required, standart_required
 from .forms import AddTransactionForm, TransactionsImportForm
 from .models import Transaction, Category
 
@@ -47,8 +48,8 @@ def transaction_list(request, transaction_type=None):
         'value_outgoing': obj.currency
     }
     for obj in Transaction.objects.filter(transaction_id=request.user, transaction_type='outgoing')]
-    dump_in = json.dumps(data_income)
-    dump_out = json.dumps(data_outgoing)
+    dump_in = json.dumps(data_income[::-1])
+    dump_out = json.dumps(data_outgoing[::-1])
     if transaction_type:
         transactions = Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type)
     else:
@@ -104,6 +105,7 @@ def export_csv(request):
 
 
 @login_required
+@premium_required
 def import_csv(request):
     if request.method == 'POST':
         form = TransactionsImportForm(request.POST, request.FILES)
@@ -113,39 +115,37 @@ def import_csv(request):
             # обработка csv файла
             with form_object.csv_file.open('r') as csv_file:
                 rows = csv.reader(csv_file, delimiter=',')
-                if next(rows) != ['Тип транзакции', 'Сумма', 'Описание', 'Категория']:
-                    print('поля не совпадают')
+                if next(rows) != ['id', 'Тип транзакции', 'Сумма', 'Дата', 'Описание', 'Категория']:
                     # обновляем страницу пользователя
                     # с информацией о какой-то ошибке
-                    messages.warning(request, 'Неверные заголовки у файла')
+                    # messages.warning(request, 'Неверные заголовки у файла')
+                    HttpResponse('Неверные заголовки у файла.')
                     return HttpResponseRedirect(request.path_info)
                 for row in rows:
                     print(row[2])
                     # добавляем данные в базу
-                    category_name = row[3]
+                    category_name = row[4]
                     category, _ = Category.objects.get_or_create(name=category_name)
                     type = ''
-                    if row[0] == 'Входящая':
+                    if row[1] == 'Входящая':
                         type = 'income'
-                    elif row[0] == 'Исходящая':
+                    elif row[1] == 'Исходящая':
                         type = 'outgoing'
                     else:
-                        type = row[0]
+                        type = row[1]
                     transaction = Transaction(
                         transaction_id=request.user,
                         transaction_type=type,
-                        currency=row[1],
-                        description=row[2],
+                        currency=row[2],
+                        date=datetime.strptime(row[3], '%d.%m.%Y %H:%M'),
+                        description=row[4],
                         category=category
                     )
                     transaction.save()
-
-            # конец обработки файлы
-            # перенаправляем пользователя на главную страницу
-            # с сообщением об успехе
             url = reverse('finances:transactions')
-            messages.success(request, 'Файл успешно импортирован')
+            # messages.success(request, 'Файл успешно импортирован')
+            HttpResponse('Файл успешно импортирован.')
             return HttpResponseRedirect(url)
     form = TransactionsImportForm()
     return render(request, 'includes/csv_import.html', {'form': form})
-# импорт происходит без загрузки данных
+

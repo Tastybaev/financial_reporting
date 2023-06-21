@@ -2,9 +2,87 @@
 {% block title %} Транзакции {% endblock %}
 {% block content %}
 {% if user.is_authenticated %}
+<!-- <script type="text/javascript">
+  // $.fn.datepicker.defaults.format='dd.mm.yyyy';
+  $(document).ready(function() {
+    // Инициализация календаря
+    $('#datepicker').daterangepicker({
+      range: 'period',
+      format: 'dd.mm.yyyy', // Формат даты
+      clearBtn: true, // Кнопка очистки
+      todayHighlight: true, // Выделение текущей даты
+      language: 'ru',
+      onSelect: function(dateText, inst, extensionRange) {
+        // Обработка выбранного диапазона
+        var startDate = $.datepicker.formatDate("dd.mm.yy", extensionRange.startDate);
+        var endDate = $.datepicker.formatDate("dd.mm.yy", extensionRange.endDate);
+        console.log("Выбран диапазон дат: " + startDate + " - " + endDate);
+      }
+    });
+
+    // Обработка выбранных дат
+    $("#submitBtn").click(function() {
+      // Получение выбранного диапазона дат
+      var selectedRange = $("#datepicker").datepicker("getDate");
+
+      if (selectedRange) {
+        // Обработка выбранного диапазона
+        var startDate = $.datepicker.formatDate("dd.mm.yy", selectedRange[0]);
+        var endDate = $.datepicker.formatDate("dd.mm.yy", selectedRange[1]);
+        console.log("Выбран диапазон дат: " + startDate + " - " + endDate);
+      }
+    });
+
+  });
+</script> -->
+<script>
+  $(function() {
+    $('input[name="daterange"]').daterangepicker({
+      opens: 'right',
+      locale: {
+        cancelLabel: 'Очистить',
+        format: 'DD.MM.YYYY',
+        "separator": " - ",
+        "applyLabel": "Применить",
+        "cancelLabel": "Очистить",
+        "fromLabel": "от",
+        "toLabel": "до",
+        "customRangeLabel": "Custom",
+        "weekLabel": "Н",
+        "daysOfWeek": [
+            "ВС",
+            "ПН",
+            "ВТ",
+            "СР",
+            "ЧТ",
+            "ПТ",
+            "СБ"
+        ],
+        "monthNames": [
+            "Январь",
+            "Февраль",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
+        "firstDay": 1
+      }
+    }, function(start, end, label) {
+      console.log("A new date selection was made: " + start.format('DD.MM.YYYY') + ' to ' + end.format('DD.MM.YYYY'));
+    });
+  });
+  </script>
   <main class="col-md-12 col-lg-12 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <button class="btn btn-primary" onclick="togle_modal()">Добавить транзакцию</button>
+        <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#periodModal">Транзакции за период</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#addTransactionModal">Добавить транзакцию</button>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <a id='togle_transaction' href="{% url 'finances:transactions_by_type' 'income' %}">
@@ -50,19 +128,72 @@
         </table>
         {% include "includes/paginator.html" with page_number=transactions %} 
       </div>
-    <div class="modal" id="add_transaction_modal">
-      <div class="modal_content">
-        <span class="modal_close" onclick="togle_modal()">&times;</span>
-        <h2>Добавить новую транзакцию</h2>
-        {% if new_transaction %}
-          <h2>Tpанзакция создана.</h2>
-        {% else %}
-          <form action="{% url 'finances:transactions' %}" method="post">
-            {{ add_transaction_form.as_p }}
-            {% csrf_token %}
-            <input class="btn btn-primary" type="submit" value="Создать">
-          </form>
-        {% endif %}
+    <div class="modal" id="addTransactionModal" aria-labelledby="periodModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addTransactionModalLabel">Добавить новую транзакцию</h5>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {% if new_transaction %}
+              <h2>Tpанзакция создана.</h2>
+            {% else %}
+              <form class="form" action="{% url 'finances:transactions' %}" method="post">
+                <div class="form-group">
+                  <label for="transaction_type">Тип транзакции:</label>
+                  <br>
+                  {{ add_transaction_form.transaction_type }}
+                </div>
+                <div class="form-group">
+                  <label for="transaction_currency">Сумма:</label>
+                  <br>
+                  {{ add_transaction_form.currency }}
+                </div>
+                <div class="form-group">
+                  <label for="transaction_description">Описание:</label>
+                  <br>
+                  {{ add_transaction_form.description }}
+                </div>
+                <div class="form-group">
+                  <label for="transaction_category">Категория:</label>
+                  <br>
+                  {{ add_transaction_form.category }}
+                </div>
+                {% csrf_token %}
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                  <input class="btn btn-primary" type="submit" value="Создать">
+                </div>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="periodModal" tabindex="1050" aria-labelledby="periodModalLabel" aria-hidden="true" >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+              <!-- Левая часть с календарем -->
+            <label>Календарь:</label>
+            <input class="form-control" type="text" name="daterange" value="" placeholder="Выберите период"/>
+            <div class="form-group">
+              <label for="select">Тип транзакции:</label>
+              <select class="form-control" id="select">
+                <option>Все</option>
+                <option>Входящие</option>
+                <option>Исходящие</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="result">Итого:</label>
+              <input type="text" class="form-control" id="result" readonly>
+            </div>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            <button id="submitBtn" type="button" class="btn btn-primary">Расчитать</button>
+          </div>
+        </div>
       </div>
     </div>
   </main>
