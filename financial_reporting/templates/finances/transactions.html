@@ -2,82 +2,8 @@
 {% block title %} Транзакции {% endblock %}
 {% block content %}
 {% if user.is_authenticated %}
-<!-- <script type="text/javascript">
-  // $.fn.datepicker.defaults.format='dd.mm.yyyy';
-  $(document).ready(function() {
-    // Инициализация календаря
-    $('#datepicker').daterangepicker({
-      range: 'period',
-      format: 'dd.mm.yyyy', // Формат даты
-      clearBtn: true, // Кнопка очистки
-      todayHighlight: true, // Выделение текущей даты
-      language: 'ru',
-      onSelect: function(dateText, inst, extensionRange) {
-        // Обработка выбранного диапазона
-        var startDate = $.datepicker.formatDate("dd.mm.yy", extensionRange.startDate);
-        var endDate = $.datepicker.formatDate("dd.mm.yy", extensionRange.endDate);
-        console.log("Выбран диапазон дат: " + startDate + " - " + endDate);
-      }
-    });
-
-    // Обработка выбранных дат
-    $("#submitBtn").click(function() {
-      // Получение выбранного диапазона дат
-      var selectedRange = $("#datepicker").datepicker("getDate");
-
-      if (selectedRange) {
-        // Обработка выбранного диапазона
-        var startDate = $.datepicker.formatDate("dd.mm.yy", selectedRange[0]);
-        var endDate = $.datepicker.formatDate("dd.mm.yy", selectedRange[1]);
-        console.log("Выбран диапазон дат: " + startDate + " - " + endDate);
-      }
-    });
-
-  });
-</script> -->
 <script>
-  $(function() {
-    $('input[name="daterange"]').daterangepicker({
-      opens: 'right',
-      locale: {
-        cancelLabel: 'Очистить',
-        format: 'DD.MM.YYYY',
-        "separator": " - ",
-        "applyLabel": "Применить",
-        "cancelLabel": "Очистить",
-        "fromLabel": "от",
-        "toLabel": "до",
-        "customRangeLabel": "Custom",
-        "weekLabel": "Н",
-        "daysOfWeek": [
-            "ВС",
-            "ПН",
-            "ВТ",
-            "СР",
-            "ЧТ",
-            "ПТ",
-            "СБ"
-        ],
-        "monthNames": [
-            "Январь",
-            "Февраль",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        ],
-        "firstDay": 1
-      }
-    }, function(start, end, label) {
-      console.log("A new date selection was made: " + start.format('DD.MM.YYYY') + ' to ' + end.format('DD.MM.YYYY'));
-    });
-  });
+  
   </script>
   <main class="col-md-12 col-lg-12 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -180,7 +106,7 @@
             <input class="form-control" type="text" name="daterange" value="" placeholder="Выберите период"/>
             <div class="form-group">
               <label for="select">Тип транзакции:</label>
-              <select class="form-control" id="select">
+              <select class="form-control" id="type_select">
                 <option>Все</option>
                 <option>Входящие</option>
                 <option>Исходящие</option>
@@ -191,7 +117,9 @@
               <input type="text" class="form-control" id="result" readonly>
             </div>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-            <button id="submitBtn" type="button" class="btn btn-primary">Расчитать</button>
+            <a id="url_daterange" href="">
+              <button id="submitBtn" type="button" class="btn btn-primary">Расчитать</button>
+            </a>
           </div>
         </div>
       </div>

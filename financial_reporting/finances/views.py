@@ -37,7 +37,8 @@ def profile(request, user):
 
 
 @login_required
-def transaction_list(request, transaction_type=None):
+def transaction_list(request, transaction_type=None, start_date=None, end_date=None):
+    print(start_date, end_date)
     data_income = [{
         'date_income': obj.date.strftime('%d.%m.%Y %H:%M'),
         'value_income': obj.currency

@@ -101,3 +101,48 @@ window.onload = function() {
   }
 };
 
+$(function() {
+  $('input[name="daterange"]').daterangepicker({
+    opens: 'right',
+    locale: {
+      cancelLabel: 'Очистить',
+      format: 'DD.MM.YYYY',
+      "separator": " - ",
+      "applyLabel": "Применить",
+      "cancelLabel": "Очистить",
+      "fromLabel": "от",
+      "toLabel": "до",
+      "customRangeLabel": "Custom",
+      "weekLabel": "Н",
+      "daysOfWeek": [
+          "ВС",
+          "ПН",
+          "ВТ",
+          "СР",
+          "ЧТ",
+          "ПТ",
+          "СБ"
+      ],
+      "monthNames": [
+          "Январь",
+          "Февраль",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+      ],
+      "firstDay": 1
+    }
+  }, function(start, end, label) {
+    type = $('#type_select').val();
+    period = type  + "/" + start.format('DD.MM.YYYY') + "/" + end.format('DD.MM.YYYY');
+    $('#url_daterange').attr('href', period);
+  });
+});
+// Еадо поравить тип транзакции в юрл и сделать, вьюху. Решить проблему с выпадающем списком.
