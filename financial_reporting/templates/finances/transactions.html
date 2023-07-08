@@ -2,9 +2,6 @@
 {% block title %} Транзакции {% endblock %}
 {% block content %}
 {% if user.is_authenticated %}
-<script>
-  
-  </script>
   <main class="col-md-12 col-lg-12 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#periodModal">Транзакции за период</button>
@@ -23,9 +20,8 @@
           </div>
         </div>
       </div>
-      <div style="display: none" id="jsonData" data-json-in="{{ dump_in }}" data-json-out="{{ dump_out }}"></div>
-      <canvas class="my-4 w-100 chart-in" id="myChartIn" width="900" height="380"></canvas>
-      <canvas class="my-4 w-100 chart-out" id="myChartOut" width="900" height="380" style="display: none;"></canvas>
+      <div style="display: none" id="jsonData" data-json="{{ dump }}"></div>
+      <canvas class="my-4 w-100 chart" id="myChart" width="300" height="125"></canvas>
       <h2>Транзакции за период</h2>
       <div class="table-responsive">
         <table class="table table-striped table-sm">

@@ -3,23 +3,21 @@ function loadJson(selector, dump_type) {
 }
 
 window.onload = function() {
-  var jsonData_out = loadJson('#jsonData', 'data-json-out');
+  var jsonData = loadJson('#jsonData', 'data-json');
 
-  var data_outgoing = jsonData_out.map((item) => item.value_outgoing);
-  var labels_outgoing = jsonData_out.map((item) => item.date_outgoing);
-  console.log(data_outgoing)
-  console.log(labels_outgoing)
-  console.log(jsonData_out)
+  var data = jsonData.map((item) => item.value);
+  var labels = jsonData.map((item) => item.date);
+  console.log(jsonData)
   var dataSecond = [{
       label: "Исходящие",
-      data: data_outgoing,
+      data: data,
       lineTension: 0,
       fill: false,
-      borderColor: 'red'
+      borderColor: 'blue'
     }];
 
   var speedData = {
-    labels: labels_outgoing,
+    labels: labels,
     datasets: dataSecond
   };
 
@@ -39,65 +37,24 @@ window.onload = function() {
     data: speedData,
     options: chartOptions
   };
-  var ctx = document.getElementById('myChartOut').getContext('2d');
-  window.myLine = new Chart(ctx, lineChart);
-  var jsonData_in = loadJson('#jsonData', 'data-json-in');
-  var data_income = jsonData_in.map((item) => item.value_income);
-  var labels_income = jsonData_in.map((item) => item.date_income);
-
-  var dataFirst = [{
-    label: "Входящие",
-    data: data_income,
-    lineTension: 0,
-    fill: false,
-    borderColor: 'green'
-  }];
-
-  var speedData = {
-    labels: labels_income,
-    datasets: dataFirst
-  };
-
-  var chartOptions = {
-    legend: {
-      display: true,
-      position: 'top',
-      labels: {
-        boxWidth: 80,
-        fontColor: 'black'
-      }
-    }
-  };
-  
-  var lineChart = {
-    type: 'line',
-    data: speedData,
-    options: chartOptions
-  };
-  var ctx = document.getElementById('myChartIn').getContext('2d');
+  var ctx = document.getElementById('myChart').getContext('2d');
   window.myLine = new Chart(ctx, lineChart);
   var button = document.getElementById('chart-togle-button');
-  var chart_in = document.getElementById('myChartIn');
-  var chart_out = document.getElementById('myChartOut');
+  var chart = document.getElementById('myChart');
   var link = document.getElementById('togle_transaction');
   if (window.location.href.indexOf('outgoing') > -1)
   {
-    chart_in.style.display = 'none';
-    chart_out.style.display = 'block';
     button.innerHTML = 'Исходящие';
     link.setAttribute("href", "income");
   }
   else if (window.location.href.indexOf('income') > -1)
   {
-    chart_in.style.display = 'block';
-    chart_out.style.display = 'none';
     button.innerHTML = 'Входящие';
     link.setAttribute("href", "outgoing");
   }
   else
   {
-    chart_in.style.display = 'none';
-    chart_out.style.display = 'none';
+    chart.style.display = 'none';
   }
 };
 
@@ -141,6 +98,15 @@ $(function() {
     }
   }, function(start, end, label) {
     type = $('#type_select').val();
+    if (type == 'Входящие'){
+      type = 'income';
+    }
+    else if (type == 'Исходящие'){
+      type = 'outgoing';
+    }
+    else {
+      type = null
+    }
     period = type  + "/" + start.format('DD.MM.YYYY') + "/" + end.format('DD.MM.YYYY');
     $('#url_daterange').attr('href', period);
   });

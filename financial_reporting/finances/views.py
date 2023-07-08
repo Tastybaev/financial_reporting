@@ -38,20 +38,34 @@ def profile(request, user):
 
 @login_required
 def transaction_list(request, transaction_type=None, start_date=None, end_date=None):
-    print(start_date, end_date)
-    data_income = [{
-        'date_income': obj.date.strftime('%d.%m.%Y %H:%M'),
-        'value_income': obj.currency
-    }
-    for obj in Transaction.objects.filter(transaction_id=request.user, transaction_type='income')]
-    data_outgoing = [{
-        'date_outgoing': obj.date.strftime('%d.%m.%Y %H:%M'),
-        'value_outgoing': obj.currency
-    }
-    for obj in Transaction.objects.filter(transaction_id=request.user, transaction_type='outgoing')]
-    dump_in = json.dumps(data_income[::-1])
-    dump_out = json.dumps(data_outgoing[::-1])
-    if transaction_type:
+    data = [{
+            'date': datetime.now().strftime('%d.%m.%Y %H:%M'),
+            'value': 0
+        }
+        ]
+    dump = json.dumps(data[::-1])
+    print(transaction_type, start_date, end_date)
+    if transaction_type == 'null' and start_date and end_date:
+        start_date = datetime.strptime(start_date, '%d.%m.%Y')
+        end_date = datetime.strptime(end_date, '%d.%m.%Y')
+        transactions = Transaction.objects.filter(transaction_id=request.user, date__range=(start_date, end_date))
+    elif transaction_type and start_date and end_date:
+        start_date = datetime.strptime(start_date, '%d.%m.%Y')
+        end_date = datetime.strptime(end_date, '%d.%m.%Y')
+        data = [{
+            'date': obj.date.strftime('%d.%m.%Y %H:%M'),
+            'value': obj.currency
+        }
+        for obj in Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type, date__range=(start_date, end_date))]
+        dump = json.dumps(data[::-1])
+        transactions = Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type, date__range=(start_date, end_date))
+    elif transaction_type:
+        data = [{
+            'date': obj.date.strftime('%d.%m.%Y %H:%M'),
+            'value': obj.currency
+        }
+        for obj in Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type)]
+        dump = json.dumps(data[::-1])
         transactions = Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type)
     else:
         transactions = Transaction.objects.filter(transaction_id=request.user)
@@ -59,7 +73,7 @@ def transaction_list(request, transaction_type=None, start_date=None, end_date=N
     page_number = request.GET.get('page_number')
     try:
         transactions_paginator = paginator.page(page_number)
-    except PageNotAnInteger:
+    except PageNotAnInteger:    
         transactions_paginator = paginator.page(1)
     except EmptyPage:
         transactions_paginator = paginator.page(paginator.num_pages)
@@ -74,12 +88,12 @@ def transaction_list(request, transaction_type=None, start_date=None, end_date=N
         add_transaction_form = AddTransactionForm()
     context = {
         'transactions': transactions_paginator,
-        'dump_in': dump_in,
-        'dump_out': dump_out,
+        'dump': dump,
         'add_transaction_form': add_transaction_form,
         'page_number': page_number
     }
     return render(request, "finances/transactions.html", context)
+# надо сделать модалку,выбор даты не должен влиять на тип транзакции, поправить ссылки(дублирование ссылок) 
 
 @login_required
 def export_csv(request):
