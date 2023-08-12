@@ -4,7 +4,13 @@
 {% if user.is_authenticated %}
   <main class="col-md-12 col-lg-12 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#periodModal">Транзакции за период</button>
+        {% if request.user|group_filter:"Premium" %}
+          <button class="btn btn-outline-secondary" id="daterangemodal" data-toggle="modal" data-target="#periodModal">Транзакции за период</button>
+        {% elif request.user|group_filter:"Standart" %}
+          <a href="{% url 'users:pricing' %}">
+            <button class="btn btn-outline-secondary">Транзакции за период</button>
+          </a>
+        {% endif %}
         <button class="btn btn-primary" data-toggle="modal" data-target="#addTransactionModal">Добавить транзакцию</button>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
@@ -36,18 +42,20 @@
             </tr>
           </thead>
           <tbody>
-              {% for transaction in transactions %}
-              <tr>
-                  <td>{{transaction.transaction_id}}</td>
-                  <td>{{transaction.get_transaction_type_display}}</td>
-                  <td>{{transaction.currency}}</td>
-                  <td>{{transaction.date}}</td>
-                  <td>{{transaction.description}}</td>
-                  <td>{{transaction.category.name}}</td>
-              </tr>
-              {% endfor %}
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{transaction.transaction_id}}</td>
+                <td>{{transaction.get_transaction_type_display}}</td>
+                <td>{{transaction.get_currency_display}}</td>
+                <td>{{transaction.date}}</td>
+                <td>{{transaction.description}}</td>
+                <td>{{transaction.category.name}}</td>
+                <td>{% csrf_token %}<button class="delete_transaction btn btn-outline-secondary" onclick="deleteTransaction({{ transaction.id }})">Удалить</button></td>
+            </tr>
+            {% endfor %}
           </tbody>
         </table>
+        <h4>Итого за период: {{ currency_sum }}</h4>
         {% include "includes/paginator.html" with page_number=transactions %} 
       </div>
     <div class="modal" id="addTransactionModal" aria-labelledby="periodModalLabel" aria-hidden="true">
@@ -62,26 +70,15 @@
               <h2>Tpанзакция создана.</h2>
             {% else %}
               <form class="form" action="{% url 'finances:transactions' %}" method="post">
-                <div class="form-group">
-                  <label for="transaction_type">Тип транзакции:</label>
-                  <br>
-                  {{ add_transaction_form.transaction_type }}
-                </div>
-                <div class="form-group">
-                  <label for="transaction_currency">Сумма:</label>
-                  <br>
-                  {{ add_transaction_form.currency }}
-                </div>
-                <div class="form-group">
-                  <label for="transaction_description">Описание:</label>
-                  <br>
-                  {{ add_transaction_form.description }}
-                </div>
-                <div class="form-group">
-                  <label for="transaction_category">Категория:</label>
-                  <br>
-                  {{ add_transaction_form.category }}
-                </div>
+                {% load user_filters %}
+                {% for field in add_transaction_form %}
+                  <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                      {{ field.label }}
+                    </label>
+                    {{ field|addclass:'form-control' }} 
+                  </div>
+                {% endfor %}
                 {% csrf_token %}
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -100,7 +97,7 @@
               <!-- Левая часть с календарем -->
             <label>Календарь:</label>
             <input class="form-control" type="text" name="daterange" value="" placeholder="Выберите период"/>
-            <div class="form-group">
+            <div class="formе-group">
               <label for="select">Тип транзакции:</label>
               <select class="form-control" id="type_select">
                 <option>Все</option>
@@ -108,12 +105,9 @@
                 <option>Исходящие</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="result">Итого:</label>
-              <input type="text" class="form-control" id="result" readonly>
-            </div>
+            <br>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-            <a id="url_daterange" href="">
+            <a id="url_daterange" href="/transactions/null/">
               <button id="submitBtn" type="button" class="btn btn-primary">Расчитать</button>
             </a>
           </div>

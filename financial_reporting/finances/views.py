@@ -3,10 +3,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models import Sum
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from datetime import datetime
 
 import csv
@@ -49,6 +50,7 @@ def transaction_list(request, transaction_type=None, start_date=None, end_date=N
         start_date = datetime.strptime(start_date, '%d.%m.%Y')
         end_date = datetime.strptime(end_date, '%d.%m.%Y')
         transactions = Transaction.objects.filter(transaction_id=request.user, date__range=(start_date, end_date))
+        currency_sum = transactions.aggregate(currency_sum=Sum('currency'))['currency_sum']
     elif transaction_type and start_date and end_date:
         start_date = datetime.strptime(start_date, '%d.%m.%Y')
         end_date = datetime.strptime(end_date, '%d.%m.%Y')
@@ -59,6 +61,7 @@ def transaction_list(request, transaction_type=None, start_date=None, end_date=N
         for obj in Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type, date__range=(start_date, end_date))]
         dump = json.dumps(data[::-1])
         transactions = Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type, date__range=(start_date, end_date))
+        currency_sum = transactions.aggregate(currency_sum=Sum('currency'))['currency_sum']
     elif transaction_type:
         data = [{
             'date': obj.date.strftime('%d.%m.%Y %H:%M'),
@@ -67,8 +70,10 @@ def transaction_list(request, transaction_type=None, start_date=None, end_date=N
         for obj in Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type)]
         dump = json.dumps(data[::-1])
         transactions = Transaction.objects.filter(transaction_id=request.user, transaction_type=transaction_type)
+        currency_sum = transactions.aggregate(currency_sum=Sum('currency'))['currency_sum']
     else:
         transactions = Transaction.objects.filter(transaction_id=request.user)
+        currency_sum = transactions.aggregate(currency_sum=Sum('currency'))['currency_sum']
     paginator = Paginator(transactions, 20)
     page_number = request.GET.get('page_number')
     try:
@@ -90,10 +95,22 @@ def transaction_list(request, transaction_type=None, start_date=None, end_date=N
         'transactions': transactions_paginator,
         'dump': dump,
         'add_transaction_form': add_transaction_form,
-        'page_number': page_number
+        'page_number': page_number,
+        'currency_sum': currency_sum
     }
     return render(request, "finances/transactions.html", context)
-# надо сделать модалку,выбор даты не должен влиять на тип транзакции, поправить ссылки(дублирование ссылок) 
+
+
+@login_required
+def delete_transaction(request, transaction_id):
+    try:
+        transaction = Transaction.objects.get(pk=transaction_id)
+    except Transaction.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Транзакция не найдена.'}, status=404)
+    # Удалите транзакцию
+    transaction.delete()
+    return JsonResponse({'success': True, 'message': 'Транзакция успешно удалена.'})
+
 
 @login_required
 def export_csv(request):

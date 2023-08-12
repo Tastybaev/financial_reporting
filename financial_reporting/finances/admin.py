@@ -6,7 +6,7 @@ from .models import Category, Transaction
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'color', 'slug')
+    list_display = ('id', 'name')
     empty_value_display = '< Тут Пусто >'
 
 

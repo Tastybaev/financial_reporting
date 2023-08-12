@@ -1,6 +1,8 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
@@ -57,5 +59,15 @@ urlpatterns = [
         'pricing/',
         TemplateView.as_view(template_name='users/payment/pricing.html'),
         name='pricing'
+    ),
+    path(
+        'settings/',
+        views.update_profile, 
+        name='settings'
+    ),
+    path(
+        'settings/delete_category/<int:category_id>/', 
+        views.delete_category, 
+        name='delete_category'
     )
 ]

@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, ValidationError
 from .models import Transaction, TransactionImport
 
 
@@ -11,6 +11,12 @@ class AddTransactionForm(ModelForm):
             'description',
             'category',
         )
+    
+    def clean_currency(self):
+        currency = self.cleaned_data['currency']
+        if currency < 0:
+            raise ValidationError('Сумма не может быть отрицательной!')
+        return currency
 
 class TransactionsImportForm(ModelForm):
     class Meta:

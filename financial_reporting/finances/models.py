@@ -9,10 +9,9 @@ User = get_user_model()
 
 
 class Category(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, default=None, related_name='owner')
     name = models.CharField(max_length=100)
-    color = models.CharField('Хекскод цвета', max_length=255)
-    slug = models.SlugField('Слаг', max_length=255)
-
+    
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
@@ -52,7 +51,18 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f'{TransactionType(self.transaction_type).label}'
-
+    
+    def save(self, *args, **kwargs):
+        if self.transaction_type == 'income':
+            self.currency = +abs(self.currency)
+        elif self.transaction_type == 'outgoing':
+            self.currency = -abs(self.currency)
+        super().save(*args, **kwargs)
+    
+    def get_currency_display(self) -> str:
+        if self.transaction_type == 'income':
+            return f'+{self.currency}'
+        return str(self.currency)
 
 class TransactionImport(models.Model):
     csv_file = models.FileField(upload_to='uploads/')
