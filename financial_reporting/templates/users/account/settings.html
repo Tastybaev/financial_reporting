@@ -64,9 +64,9 @@
           </thead>
           <tbody>
             {% for category in categories %}
-            <tr>
+            <tr id="category-{{category.id}}" >
                 <td>{{category.name}}</td>
-                <td>{% csrf_token %}<a href="{% url 'users:delete_category' category.id %}"><button class="delete_category btn btn-outline-secondary">Удалить</button></a></td>
+                <td>{% csrf_token %}<button class="delete_category btn btn-outline-secondary" id="deleteCategory" onclick="deleteCategory({{ category.id }})">Удалить</button></td>
             </tr>
             {% endfor %}
           </tbody>
@@ -75,6 +75,5 @@
     </div>
   </div>
 </div>
+{% include 'includes/notification.html' %}
 {% endblock %}
-
-<!-- Сделать стандартный набор категорий для стандарта и возможность подключения для премиума. -->

@@ -7,7 +7,6 @@ window.onload = function() {
 
   var data = jsonData.map((item) => item.value);
   var labels = jsonData.map((item) => item.date);
-  console.log(jsonData)
   var dataSecond = [{
       label: "Исходящие",
       data: data,
@@ -152,13 +151,42 @@ function deleteTransaction(transaction_id) {
   .then(response => response.json())
     .then(data => {
       // Обработка ответа от сервера
+      openNotification(data.message)
       if (data.success) {
         // Удаление транзакции из DOM
         const transactionElement = document.querySelector(`#transaction-${transaction_id}`);
+        console.log(transactionElement)
         if (transactionElement) {
           transactionElement.remove();
         }
-        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Произошла ошибка при удалении транзакции:', error);
+    });
+}
+
+function deleteCategory(category_id) {
+  const csrf = getCookie('csrftoken')
+  fetch(
+    `/auth/settings/delete_category/${category_id}/`,
+    {
+      method:'POST',
+      headers:{'X-CSRFToken': csrf,},
+    }
+  )
+  .then(response => response.json())
+    .then(data => {
+      // Обработка ответа от сервера
+      openNotification(data.message)
+      if (data.success) {
+        // Удаление транзакции из DOM
+        const categoryElement = document.querySelector(`#category-${category_id}`);
+        console.log(categoryElement)
+        if (categoryElement) {
+          categoryElement.remove();
+        }
+        // location.reload();
       }
     })
     .catch(error => {
@@ -171,3 +199,12 @@ function getCookie(name) {
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
+
+function openNotification(message) {
+  $('#modal-message').text(message);
+  $('#notificationModal').modal('show');
+}
+
+$('#notificationClose').click(function(){
+  $('#notificationModal').modal('hide');
+})

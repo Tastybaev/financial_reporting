@@ -43,7 +43,7 @@
           </thead>
           <tbody>
             {% for transaction in transactions %}
-            <tr>
+            <tr id="transaction-{{transaction.id}}">
                 <td>{{transaction.transaction_id}}</td>
                 <td>{{transaction.get_transaction_type_display}}</td>
                 <td>{{transaction.get_currency_display}}</td>
@@ -115,6 +115,7 @@
       </div>
     </div>
   </main>
+  {% include 'includes/notification.html' %}
 {% endif %}
 {% endblock %}
 

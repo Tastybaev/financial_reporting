@@ -83,14 +83,14 @@ def transaction_list(request, transaction_type=None, start_date=None, end_date=N
     except EmptyPage:
         transactions_paginator = paginator.page(paginator.num_pages)
     if request.method == 'POST':
-        add_transaction_form = AddTransactionForm(data=request.POST)
+        add_transaction_form = AddTransactionForm(user=request.user, data=request.POST)
         if add_transaction_form.is_valid():
             new_transaction = add_transaction_form.save(commit=False)
             new_transaction.transaction_id = request.user
             new_transaction.save()
             return redirect(request.path)
     else:
-        add_transaction_form = AddTransactionForm()
+        add_transaction_form = AddTransactionForm(user=request.user)
     context = {
         'transactions': transactions_paginator,
         'dump': dump,
@@ -180,4 +180,3 @@ def import_csv(request):
             return HttpResponseRedirect(url)
     form = TransactionsImportForm()
     return render(request, 'includes/csv_import.html', {'form': form})
-

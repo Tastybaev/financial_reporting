@@ -1,3 +1,4 @@
+from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
@@ -45,7 +46,12 @@ def delete_category(request, category_id):
     try:
         category = Category.objects.get(pk=category_id)
     except Category.DoesNotExist:
-        return JsonResponse({'success': False, 'message': 'Категория не найдена.'}, status=404)
+        return JsonResponse({'success': False, 'message':'Категория не найдена!'})
     # Удалите транзакцию
-    category.delete()
-    return redirect('users:settings')
+    try:
+        category.delete()
+        return JsonResponse({'success': True, 'message':'Категория успешно удалена'})
+    except ProtectedError:
+        return JsonResponse({'success': False, 'message':'Нельзя удалить категорию у которой есть транзакции.'})
+
+# Добавить стандартный набор категорий для всех пользователей.

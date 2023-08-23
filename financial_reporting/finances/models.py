@@ -36,7 +36,7 @@ class Transaction(models.Model):
     currency = models.FloatField('Сумма', max_length=20)
     date = models.DateTimeField('Дата', default=timezone.now)
     description = models.TextField('Описание')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='categories', verbose_name='Категория')
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, related_name='categories', verbose_name='Категория')
     
     class Meta:
         verbose_name = 'Транзакция'
